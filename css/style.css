@@ -1,0 +1,116 @@
+@font-face {
+  font-family: "SourceSansPro";
+  src: url(source-sans-pro.woff) format("woff");
+}
+
+@font-face {
+  font-family: "Roboto Mono";
+  font-weight: 500;
+  src: url(roboto-mono-500.woff) format("woff");
+}
+
+@font-face {
+  font-family: "Roboto Condensed";
+  font-style: italic;
+  font-weight: 300;
+  src: url(roboto-condensed-300italic.woff) format("woff");
+}
+
+body {
+  font-family: "SourceSansPro", sans-serif;
+}
+
+/* Header */
+
+header {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background-color: Beige;
+  box-shadow: 0 0 10px DarkGrey;
+}
+
+header a {
+  text-decoration: none;
+}
+
+header div.content {
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  height: 4rem;
+  max-width: 700px;
+}
+
+header .site-name {
+  line-height: 1;
+  position: static;
+  display: block;
+  font-family: Roboto Mono;
+  font-weight: 500;
+  margin-bottom: 0;
+  margin-top: 0.5rem;
+}
+
+header .site-description {
+  margin-top: 0.2rem;
+  font-size: 16px;
+  font-family: Roboto Condensed;
+  font-style: italic;
+  font-weight: 300;
+}
+
+header nav {
+  position: absolute;
+  display: block;
+  right: 0;
+  top: 1rem;
+  font-size: 16px;
+}
+
+header nav ul {
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+  text-align: right;
+}
+
+header nav ul li {
+  list-style-type: none;
+  display: inline-block;
+  height: 1.5rem;
+  width: 4rem;
+  text-align: center;
+}
+
+/* Main */
+
+main {
+  display: block;
+  text-align: justify;
+}
+
+/* Rules for small screens */
+
+@media screen and (max-width: 399px) {
+  header .site-name {
+    text-align: center;
+  }
+
+  header .site-description {
+    display: none;
+  }
+
+  header nav {
+    position: static;
+    text-align: center;
+    margin-top: 0.2rem;
+  }
+
+  header nav ul {
+    display: inline-block;
+    margin: auto;
+  }
+}
