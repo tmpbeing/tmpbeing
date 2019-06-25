@@ -1,60 +1,72 @@
 @font-face {
-  font-family: "SourceSansPro";
+  font-family: SourceSansPro;
   src: url(source-sans-pro.woff) format("woff");
 }
 
 @font-face {
-  font-family: "Roboto Mono";
+  font-family: Roboto Mono;
   font-weight: 500;
   src: url(roboto-mono-500.woff) format("woff");
 }
 
 @font-face {
-  font-family: "Roboto Condensed";
+  font-family: Roboto Mono;
+  font-weight: 400;
+  src: url(roboto-mono-regular.woff) format("woff");
+}
+
+@font-face {
+  font-family: Roboto Condensed;
   font-style: italic;
   font-weight: 300;
   src: url(roboto-condensed-300italic.woff) format("woff");
 }
 
 body {
-  font-family: "SourceSansPro", sans-serif;
+  font-family: SourceSansPro, sans-serif;
 }
 
 /* Header */
 
-header {
+.page-header {
   position: absolute;
   width: 100%;
   top: 0;
   left: 0;
-  background-color: Beige;
-  box-shadow: 0 0 10px DarkGrey;
+  background-color: #20292d;
+  box-shadow: 0 0 10px #606778;
 }
 
-header a {
+.page-header a {
   text-decoration: none;
+  color: ;
 }
 
-header div.content {
+.page-header div.content {
   position: relative;
   margin-left: auto;
   margin-right: auto;
   padding-left: 1rem;
   height: 4rem;
   max-width: 700px;
+  color: #c5c8c6;
 }
 
-header .site-name {
+.page-header .site-name {
   line-height: 1;
   position: static;
   display: block;
-  font-family: Roboto Mono;
+  font-family: Roboto Mono, monospace;
   font-weight: 500;
   margin-bottom: 0;
   margin-top: 0.5rem;
 }
 
-header .site-description {
+.page-header .site-name a {
+  color: #7daea9;
+}
+
+.page-header .site-description {
   margin-top: 0.2rem;
   font-size: 16px;
   font-family: Roboto Condensed;
@@ -62,7 +74,7 @@ header .site-description {
   font-weight: 300;
 }
 
-header nav {
+.page-header nav {
   position: absolute;
   display: block;
   right: 0;
@@ -70,14 +82,14 @@ header nav {
   font-size: 16px;
 }
 
-header nav ul {
+.page-header nav ul {
   margin: 0;
   padding: 0;
   line-height: 1;
   text-align: right;
 }
 
-header nav ul li {
+.page-header nav ul li {
   list-style-type: none;
   display: inline-block;
   height: 1.5rem;
@@ -85,31 +97,163 @@ header nav ul li {
   text-align: center;
 }
 
+.page-header nav ul li a {
+  color: #cbb079;
+}
+
 /* Main */
 
 main {
   display: block;
   text-align: justify;
+  margin: 6rem auto 0 auto;
+  max-width: 700px;
+  font-size: 18px;
 }
 
-/* Rules for small screens */
+main a:visited {
+  color: #8f3f71;
+}
 
+main a:link {
+  color: #076678;
+}
+
+/* Article header */
+
+.article-header {
+  line-height: 22px;
+}
+
+.article-header h1 {
+  color: #2e3440;
+  font-size: 24px;
+  text-transform: lowercase;
+  text-align: left;
+  border-bottom: 1px dotted #20292d;
+}
+
+.article-header a:link,
+.article-header a:hover,
+.article-header a:visited {
+  text-decoration: none;
+  color: #20292d;
+}
+
+.article-header time {
+  margin-top: 2px;
+  float: right;
+  font-style: italic;
+  color: #b77a76;
+  /* color: #343d41; */
+}
+
+/* Article code display */
+
+main article code {
+  font-family: Roboto Mono;
+}
+
+main article pre {
+  padding: 0.5em;
+  line-height: 1.2;
+  border: 1px solid #d5c4a1;
+}
+
+/* Article navigation section */
+
+nav .prev-article {
+  text-align: left;
+}
+
+nav .next-article {
+  text-align: right;
+}
+
+nav .prev-article:before {
+  content: "«";
+  margin-right: 0.5rem;
+}
+
+nav .next-article:after {
+  content: "»";
+  margin-left: 0.5rem;
+}
+
+.more {
+  display: block;
+}
+
+.archive {
+  display: block;
+  text-align: right;
+}
+
+/* Article tags */
+article ul.tags {
+  display: block;
+  text-align: right;
+}
+
+article ul.tags:before {
+  content: "tags [";
+}
+
+article ul.tags:after {
+  content: "]";
+}
+
+article ul.tags li {
+  display: inline-block;
+  list-style-type: none;
+  margin: 0 0.25em;
+}
+
+/* Index specifics */
+.index h1 {
+  text-align: center;
+}
+
+.index ul li {
+  list-style-type: none;
+}
+
+.index ul li time {
+  color: #919176;
+  margin-right: 0.2rem;
+}
+
+/* Error */
+.error {
+  margin: 10px auto;
+  max-width: 600px;
+  text-align: center;
+}
+
+.error .h1 {
+  font-size: 4em;
+  line-height: 1;
+  letter-spacing: -1px;
+  margin: 30px 0;
+}
+
+/* Responsiveness */
 @media screen and (max-width: 399px) {
-  header .site-name {
+  .page-header .site-name {
     text-align: center;
   }
 
-  header .site-description {
+  .page-header .site-description {
     display: none;
   }
 
-  header nav {
+  .page-header nav {
     position: static;
     text-align: center;
     margin-top: 0.2rem;
   }
 
-  header nav ul {
+  .page-header nav ul {
     display: inline-block;
     margin: auto;
   }
