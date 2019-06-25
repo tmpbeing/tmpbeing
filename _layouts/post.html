@@ -2,40 +2,41 @@
 layout: default
 ---
 
-<article class="single">
-  <h2><a href="{{ page.url }}">{{ page.title }}</a></h2>
-  <time datetime="{{ page.date | date: "%Y-%m-%d" }}">
-    {{ page.date | date: "%B %d, %Y" }}
-  </time>
-  <div class="print-only url">
-    nullprogram.com{{page.url}}
-  </div>
+<article class="post">
+    <header class="article-header">
+    <time datetime="{{ page.date | date: "%Y-%m-%d" }}">
+        {{ page.date | date: "%b %d, %Y" }}
+    </time>
+    <h1><a href="{{ page.url }}">{{ page.title }}</a></h1>
+    </header>
 
-  {{ content }}
+    {{ content }}
 
-  <ul class="tags">
+    <ul class="tags">
     {% for tag in page.tags %}
-    <li><a href="/tags/{{ tag }}/">{{ tag }}</a></li>
+        <li>
+            <!-- <a href="/tags/{{ tag }}/"> -->
+                {{ tag }}
+            <!-- </a> -->
+        </li>
     {% endfor %}
-  </ul>
-  <ol class="references print-only"></ol>
+    </ul>
 
-  <nav class="no-print">
-  {% if page.previous.url %}
-    <div class="prev">
-      <span class="marker">«</span>
-      <a href="{{page.previous.url}}">
-        {{page.previous.title}}
-      </a>
-    </div>
-  {% endif %}
-  {% if page.next.url %}
-    <div class="next">
-      <span class="marker">»</span>
-      <a href="{{page.next.url}}">
-        {{page.next.title}}
-      </a>
-    </div>
-  {% endif %}
-  </nav>
+    <nav>
+    {% if page.previous.url %}
+        <div class="prev-article">
+            <a href="{{page.previous.url}}">
+                {{page.previous.title}}
+            </a>
+            </span>
+        </div>
+    {% endif %}
+    {% if page.next.url %}
+        <div class="next-article">
+            <a href="{{page.next.url}}">
+                {{page.next.title}}
+            </a>
+        </div>
+    {% endif %}
+    </nav>
 </article>
