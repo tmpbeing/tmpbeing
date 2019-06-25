@@ -6,6 +6,7 @@
 #     values:
 #       is_post: true # automatically set is_post=true for all posts
 
+
 title: /tmp/being
 email: your-email@example.com
 description: Thoughts on software and humanity
@@ -14,6 +15,7 @@ url: "https://planelles.dev"
 github_username:  tmpbeing
 timezone: Europe/Paris
 future: true
+permalink: blog/:year/:month/:day
 
 # Build settings
 markdown: kramdown
