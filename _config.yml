@@ -8,9 +8,8 @@
 
 
 title: /tmp/being
-email: your-email@example.com
-description: Thoughts on software and humanity
-baseurl: "" # the subpath of your site, e.g. /blog
+description: Thoughts on software, productivity and society
+baseurl: /
 url: "https://planelles.dev"
 github_username:  tmpbeing
 timezone: Europe/Paris
