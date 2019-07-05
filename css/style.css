@@ -159,6 +159,8 @@ main article pre {
   padding: 0.5em;
   line-height: 1.2;
   border: 1px solid #d5c4a1;
+  font-size: 14px;
+  overflow: auto;
 }
 
 /* Article navigation section */
