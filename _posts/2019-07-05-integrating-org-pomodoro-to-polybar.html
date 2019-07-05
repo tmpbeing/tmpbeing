@@ -1,0 +1,198 @@
+---
+title: "Integrating org-pomodoro to polybar"
+date: 2019-07-05 02:04:37
+layout: post
+tags: emacs org-mode
+---
+
+<p>
+I like to use the <a href="https://en.wikipedia.org/wiki/Pomodoro_Technique">pomodoro technique</a>. Initially I built myself for fun a simple daemon in Rust to
+handle the pomodoro cycles and I would display it's output periodically in my
+<a href="https://polybar.github.io/">status bar</a> to be able to keep track of said cycles at a glance. But after a while of using that I switched to the
+most excellent <a href="https://github.com/marcinkoziej/org-pomodoro">org-pomodoro</a> as it integrated better with my existing workflow. I
+wanted to keep my status bar indicator though as I'm not always in Emacs so I
+had to write a script to get the current pomodoro status.
+</p>
+
+<p>
+This is what it looks like :
+<img src="/images/org-pomodoro-polybar.png" alt="org-pomodoro-polybar.png" />
+You can toggle the amount of information shown and the icon and color depend on the status.
+</p>
+
+<p>
+For this I'll assume you're running Emacs as a daemon. You'll also need the
+<a href="https://github.com/gabrielelana/pomicons">pomicons font</a> installed on your system. If you're only interested
+in the code you can find it here but for this article I'll go over the process
+of creating the script.
+</p>
+
+<p>
+First we have to get from Emacs the current org-pomodoro status. To do so we
+will use the following command :
+</p>
+{% highlight lisp %}
+emacsclient --eval '(if (org-pomodoro-active-p) org-pomodoro-state -1)'
+{% endhighlight %}
+<p>
+<code>Emacsclient --eval</code> sends a command to the daemon and gives us it's return.
+<code>(if (org-pomodoro-active-p) org-pomodoro-state -1)</code> returns the pomodoro state
+if org-pomodoro is active. Otherwise it returns -1.
+</p>
+
+<p>
+Let's put the result of that command in a variable and print a different icon
+depending on the state :
+</p>
+{% highlight bash %}
+#!/usr/bin/env bash
+
+STATE=$(emacsclient --eval '(if (org-pomodoro-active-p) org-pomodoro-state -1)')
+case "$STATE" in
+    ":pomodoro")
+        echo -e "%{F#B77A76}\ue003";;
+    ":short-break")
+        echo -e "%{F#958090}\ue005";;
+    ":long-break")
+        echo -e "%{F#7DAEA9}\ue006";;
+    *)
+        echo -e "\ue007";;
+esac
+{% endhighlight %}
+<p>
+This will print a different icon depending on the state (pomodoro, short break
+or long break) or print a ghost icon if no pomodoro state is found (that
+includes errors). The <code>\ue003</code> is used to print the <a href="https://github.com/gabrielelana/pomicons">corresponding unicode.</a> The <code>%{F#hexcolor}</code> part is a <a href="https://github.com/polybar/polybar/wiki/Formatting#format-tags-inside-polybar-config">polybar format tag</a>, you can
+change them to the colors of your choice.
+</p>
+
+<p>
+The polybar config looks like the following :
+</p>
+{% highlight INI %}
+[module/pomodoro]
+type = custom/script
+exec = /path/to/the/script.sh
+interval = 5
+{% endhighlight %}
+<p>
+The interval is 5 seconds to avoid using too much resources.
+</p>
+
+<p>
+We could stop there but I wanted it to be able to optionally show the time and
+the current task, meaning I wanted to be able to switch between different output
+formats.
+To do so, we need to have some way to keep track of a state. Environment
+variables aren't an option as the script is called as a child and therefor
+cannot modify the environment of the parent. This means we have to use a file
+instead, like so :
+</p>
+{% highlight bash %}
+OUTPUT_STYLE_FILE="/tmp/pomodoro-polybar-output-style"
+
+# If the file doesn't exist, default to SIMPLE output style
+if test -e "$OUTPUT_STYLE_FILE"
+then
+    OUTPUT_STYLE=$(cat "$OUTPUT_STYLE_FILE")
+else
+    OUTPUT_STYLE="SIMPLE"
+fi
+
+if [ "$#" == "0" ]; then
+    case "$1" in
+        "SIMPLE")
+            print_pomodoro_state_simple;;
+        "LONG")
+            print_pomodoro_state_long;;
+        *)
+            print_pomodoro_state_full;;
+    esac
+fi
+
+# Toggle env variable to know what kind of output to show
+if [ "$1" == "toggle" ]; then
+    case "$OUTPUT_STYLE" in
+        "SIMPLE")
+            NEW_OUTPUT_STYLE="LONG";;
+        "LONG")
+            NEW_OUTPUT_STYLE="FULL";;
+        *)
+            NEW_OUTPUT_STYLE="SIMPLE";;
+    esac
+    echo $NEW_OUTPUT_STYLE > /tmp/pomodoro-polybar-output-style
+fi
+{% endhighlight %}
+
+<p>
+So now the output style depends on the content of the
+<code>/tmp/pomodoro-polybar-output-style</code> file if it exists and defaults
+to simple otherwise.
+If the script is called with the <code>toggle</code> argument it will toggle between the
+different output styles and if called without it will output the pomodoro state
+depending on the set output style.
+</p>
+
+<p>
+All we have to do now is implement the different print functions.
+For starters we can get the remaining time.
+</p>
+{% highlight bash %}
+set_remaining_time() {
+    TIME_REMAINING=$(emacsclient --eval '(org-pomodoro-format-seconds)')
+    TIME_REMAINING="${TIME_REMAINING%\"}"
+    TIME_REMAINING="${TIME_REMAINING#\"}"
+}
+{% endhighlight %}
+<p>
+Emacs output is between quotes, i.e. <code>"25:00"</code>, so we have to remove them, here
+using bash built-ins. Same for the current task :
+</p>
+{% highlight bash %}
+set_task_at_hand() {
+    TASK_AT_HAND=$(emacsclient --eval '(org-no-properties org-clock-current-task)')
+    TASK_AT_HAND="${TASK_AT_HAND%\"}"
+    TASK_AT_HAND="${TASK_AT_HAND#\"}"
+}
+{% endhighlight %}
+
+<p>
+I'll just go over one of the 3 print functions :
+</p>
+{% highlight bash %}
+print_pomodoro_state_full() {
+    set_state_and_pomodoro_icon
+    if [ $STATE = ":pomodoro" ]; then
+        set_remaining_time
+        set_task_at_hand
+        echo -e "$ICON $TIME_REMAINING $TASK_AT_HAND"
+    elif [ $STATE = ":short-break" -o $STATE = ":long-break" ]; then #No current task to print
+        set_remaining_time
+        echo -e "$ICON $TIME_REMAINING"
+    else # Org-pomodoro not running, nothing else to print
+        echo -e "$ICON"
+        exit
+    fi
+    exit
+}
+{% endhighlight %}
+<p>
+<code>set_state_and_pomodoro_icon</code> is just a modified version of the first version of
+the script that populates a variable ICON with the color and icon to print
+instead of echoing it.
+We have 3 cases :
+</p>
+<ul class="org-ul">
+<li>We are in a pomodoro so we need the icon, the remaining</li>
+</ul>
+<p>
+time and the task description and then echo them all at once.
+</p>
+<ul class="org-ul">
+<li>We are in a break and so only the icon and remaining time are relevant.</li>
+<li>We are not in either and so only display the away icon.</li>
+</ul>
+
+<p>
+Putting it all together, you can find the end result <a href="https://gist.github.com/tmpbeing/0af5d6f44d8978a29035c415a4cd8fe4">here</a>.
+</p>
