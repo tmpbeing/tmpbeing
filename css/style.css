@@ -49,7 +49,7 @@ body {
   margin-right: auto;
   padding-left: 1rem;
   height: 4rem;
-  max-width: 700px;
+  max-width: 800px;
   color: #c5c8c6;
 }
 
@@ -108,7 +108,7 @@ main {
   display: block;
   text-align: justify;
   margin: 6rem auto 0 auto;
-  max-width: 700px;
+  max-width: 800px;
   font-size: 18px;
 }
 
@@ -144,9 +144,24 @@ main a:link {
 .article-header time {
   margin-top: 2px;
   float: right;
+
   font-style: italic;
   color: #b77a76;
   /* color: #343d41; */
+}
+
+/* Article section display */
+main article .outline-2 .section-number-2 {
+  display: none;
+}
+
+main article h2:before {
+  content: "#";
+}
+
+main article h2 {
+  font-size: 22px;
+  margin-bottom: -0.6em;
 }
 
 /* Article code display */
@@ -161,6 +176,33 @@ main article pre {
   border: 1px solid #d5c4a1;
   font-size: 14px;
   overflow: auto;
+}
+
+/* Article img display */
+
+main article .figure {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  font-style: italic;
+}
+
+main article .figure p + p {
+  margin-top: -0.8em;
+  font-size: 16px;
+}
+
+main article .figure-number {
+  display: none;
+}
+
+main article img {
+  display: block;
+  max-width: 80%;
+  min-width: 40%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Article navigation section */
