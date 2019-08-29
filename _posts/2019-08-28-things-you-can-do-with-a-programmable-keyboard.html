@@ -1,0 +1,162 @@
+---
+title: "Things you can do with a programmable keyboard"
+date: 2019-08-28 00:00:00
+layout: post
+tags: keyboard productivity
+---
+
+<p>
+  I love tools. Whether they are hardware or software, tools are the things that
+  empower humans to build. And so I highly value good tools as they allow us to
+  build things better, faster and/or more easily. As a software engineer my most
+  used tools are my
+  <a href="https://www.gnu.org/software/emacs/">text editor</a>, my
+  <a href="https://github.com/jwilm/alacritty">terminal emulator</a> and my
+  <a href="https://i3wm.org/">window manager</a> and therefore I spend a lot
+  —some would say too much- of time
+  <a href="https://github.com/tmpbeing/dotfiles">customizing</a> them as the
+  best tools should fit the hand of their user. And in the physical world we
+  have computers, keyboards and mouses which are the essential tools for writing
+  software.
+</p>
+
+<div class="figure">
+  <p><img src="/images/ergodox-ez.jpg" alt="ergodox-ez.jpg" /></p>
+  <p><span class="figure-number">Figure 1: </span>The ergodox EZ</p>
+</div>
+
+<p>
+  Over the years I have bought many keyboards with varying degrees of quality,
+  noise or actuation force required. But I recently went further and bought my
+  first fully programmable keyboard -and also first split layout keyboard- : the
+  <a href="https://ergodox-ez.com/">ErgoDox EZ</a>. A programmable keyboard
+  means you can fully customize what happens when you press/release a key. For
+  the Ergodox EZ you can do so through an excellent online tool but this tool
+  still has it&rsquo;s limitations. So I went another route and decided to
+  configure my keyboard directly through it&rsquo;s firmware instead : the
+  powerful and open-source <a href="https://qmk.fm/">QMK firmware</a>. You can
+  find my WIP configuration on
+  <a href="https://github.com/tmpbeing/ergodox-layout">GitHub</a>.
+</p>
+
+<div class="figure">
+  <p><img src="/images/base-layout.jpg" alt="base-layout.jpg" /></p>
+  <p><span class="figure-number">Figure 2: </span>My ergodox layout</p>
+</div>
+
+<p>
+  But what makes a programmable keyboard worth it&rsquo;s price ? I&rsquo;ll go
+  over some of the features and provide some examples of uses I came up with
+  after owning the EZ for a few weeks.
+</p>
+
+<div id="outline-container-org95ebc5f" class="outline-2">
+  <h2 id="org95ebc5f"><span class="section-number-2">1</span> Layers</h2>
+  <div class="outline-text-2" id="text-1">
+    <p>
+      First of all there&rsquo;s the layers. A lot of keyboards have layers (the
+      <code>FN</code> key) but with a programmable keyboards you can define your
+      own that fit your needs. For example I am french but I use the QWERTY
+      layout as I find it better to program with than AZERTY where some special
+      characters are less accessible. That means however that making special
+      french accentuated characters requires that I hold <code>Alt-Gr</code>,
+      press the required accent and then the character I want accentuated. This
+      can be quite tedious. So I programmed myself a layer which includes a
+      variety of accentuated characters. Layers could also be used is to learn a
+      new layout (e.g. DVORAK or COLEMAK) while still having your usual layout
+      for when you need to be productive.
+    </p>
+  </div>
+</div>
+
+<div id="outline-container-org31228bf" class="outline-2">
+  <h2 id="org31228bf">
+    <span class="section-number-2">2</span> Custom keycodes
+  </h2>
+  <div class="outline-text-2" id="text-2">
+    <p>
+      I use <code>~</code> a lot more than <code>`</code> and so would rather
+      have the back-tick when I hold shift and tilde otherwise. With custom
+      keycodes I can. Basically they allow you to define the behavior of a new
+      key or modify the behavior of existing keys.
+    </p>
+  </div>
+</div>
+
+<div id="outline-container-orgb664e6d" class="outline-2">
+  <h2 id="orgb664e6d"><span class="section-number-2">3</span> Oneshots</h2>
+  <div class="outline-text-2" id="text-3">
+    <p>
+      Oneshots allow you to press a modifier key one time and it will stay
+      active until you press another key. Once a key is pressed, the modifier is
+      lifted. The same can be done for layer toggles. You can also have a key
+      behave as oneshot if quickly pressed and behave normally when
+      long-pressed. You can configure oneshots to timeout after a while.
+    </p>
+  </div>
+</div>
+
+<div id="outline-container-orga21cac6" class="outline-2">
+  <h2 id="orga21cac6"><span class="section-number-2">4</span> TapDance</h2>
+  <div class="outline-text-2" id="text-4">
+    <p>
+      The TapDance extension allows you to have keys behave differently
+      depending on the number of presses. For example I use tap-dance to have a
+      single key for
+      <code>[</code>, <code>{</code> and <code>(</code>. Said key behaves as
+      <code>[</code> normally, <code>{</code> when shifted and <code>(</code>
+      when double pressed.
+    </p>
+  </div>
+</div>
+
+<div id="outline-container-orga30ab8b" class="outline-2">
+  <h2 id="orga30ab8b"><span class="section-number-2">5</span> Leader</h2>
+  <div class="outline-text-2" id="text-5">
+    <p>
+      If you&rsquo;re familiar with vim leader key, this is essentially the same
+      thing for your keyboard : you press <code>LEADER</code> then a sequence of
+      keys and the keyboard will perform the action programmed for said
+      sequence.
+    </p>
+  </div>
+</div>
+
+<div id="outline-container-orge3e2c61" class="outline-2">
+  <h2 id="orge3e2c61"><span class="section-number-2">6</span> Auto-shift</h2>
+  <div class="outline-text-2" id="text-6">
+    <p>
+      This is a feature that I don&rsquo;t use but I know many people enjoy it.
+      With it you can tap a key for a non-shifted key and tap it longer for the
+      shifted version.
+    </p>
+  </div>
+</div>
+
+<div id="outline-container-org7aa460a" class="outline-2">
+  <h2 id="org7aa460a">
+    <span class="section-number-2">7</span> Combining those features
+  </h2>
+  <div class="outline-text-2" id="text-7">
+    <p>
+      We can combine these features to make powerful keys. For example, I built
+      myself a key to control my window manager or Tmux. When pressed once it
+      activates my WM layer and oneshots the <code>GUI</code> (aka Windows/Cmd)
+      modifier which is the modifier key used by my window manager, when a key
+      is pressed or the timeout is reached the keyboard returns to it&rsquo;s
+      initial state. When pressed twice, the TMUX layer is activated and my Tmux
+      prefix key (<code>Ctrl-A</code>) is sent. Ultimately these two layers
+      should have similar actions for each key.
+    </p>
+
+    <p>
+      As you can see a programmable keyboard -with the QMK firmware- is a
+      powerful tool and I am very happy with mine. So far I have been able to
+      implement everything I tried to. There is however the downside that it
+      requires some time investment if you want it to be tailored to your needs.
+      The other downside that I&rsquo;ve found is that whenever I have to work
+      on a standard keyboard I miss mine and need some time to re-adapt. This is
+      amplified by the fact that the ergodox EZ is ortholinear and splitted.
+    </p>
+  </div>
+</div>
