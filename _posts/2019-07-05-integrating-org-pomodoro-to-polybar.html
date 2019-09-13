@@ -1,29 +1,32 @@
 ---
 title: "Integrating org-pomodoro to polybar"
-date: 2019-07-05 02:04:37
+date: 2019-07-05 00:00:00
 layout: post
-tags: emacs org-mode
+tags: orgmode emacs
 ---
-
 <p>
 I like to use the <a href="https://en.wikipedia.org/wiki/Pomodoro_Technique">pomodoro technique</a>. Initially I built myself for fun a simple daemon in Rust to
-handle the pomodoro cycles and I would display it's output periodically in my
+handle the pomodoro cycles and I would display it&rsquo;s output periodically in my
 <a href="https://polybar.github.io/">status bar</a> to be able to keep track of said cycles at a glance. But after a while of using that I switched to the
 most excellent <a href="https://github.com/marcinkoziej/org-pomodoro">org-pomodoro</a> as it integrated better with my existing workflow. I
-wanted to keep my status bar indicator though as I'm not always in Emacs so I
+wanted to keep my status bar indicator though as I&rsquo;m not always in Emacs so I
 had to write a script to get the current pomodoro status.
 </p>
 
 <p>
-This is what it looks like :<br />
-<img src="/images/org-pomodoro-polybar.png" alt="org-pomodoro-polybar.png" /><br />
-You can toggle the amount of information shown and the icon and color depend on the status.
+<b>UPDATE :</b> <i>You can find a more recent and featureful version of the script <a href="/blog/2019/09/13">here</a>.</i>
 </p>
 
 <p>
-For this I'll assume you're running Emacs as a daemon. You'll also need the
-<a href="https://github.com/gabrielelana/pomicons">pomicons font</a> installed on your system. If you're only interested
-in the code you can find it here but for this article I'll go over the process
+This is what it looks like :
+<img src="/images/org-pomodoro-polybar.png" alt="org-pomodoro-polybar.png" />
+You can toggle the amount of information shown.
+</p>
+
+<p>
+For this I&rsquo;ll assume you&rsquo;re running Emacs as a daemon. You&rsquo;ll also need the
+<a href="https://github.com/gabrielelana/pomicons">pomicons font</a> installed on your system. If you&rsquo;re only interested
+in the code you can find it here but for this article I&rsquo;ll go over the process
 of creating the script.
 </p>
 
@@ -35,13 +38,13 @@ will use the following command :
 emacsclient --eval '(if (org-pomodoro-active-p) org-pomodoro-state -1)'
 {% endhighlight %}
 <p>
-<code>Emacsclient --eval</code> sends a command to the daemon and gives us it's return.
+<code>Emacsclient --eval</code> sends a command to the daemon and gives us it&rsquo;s return.
 <code>(if (org-pomodoro-active-p) org-pomodoro-state -1)</code> returns the pomodoro state
 if org-pomodoro is active. Otherwise it returns -1.
 </p>
 
 <p>
-Let's put the result of that command in a variable and print a different icon
+Let&rsquo;s put the result of that command in a variable and print a different icon
 depending on the state :
 </p>
 {% highlight bash %}
@@ -62,7 +65,7 @@ esac
 <p>
 This will print a different icon depending on the state (pomodoro, short break
 or long break) or print a ghost icon if no pomodoro state is found (that
-includes errors). The <code>\ue003</code> is used to print the <a href="https://github.com/gabrielelana/pomicons">corresponding unicode.</a> The <code>%{F#hexcolor}</code> part is a <a href="https://github.com/polybar/polybar/wiki/Formatting#format-tags-inside-polybar-config">polybar format tag</a>, you can
+includes errors). The <code>\ue003</code> is used to print the <a href="https://github.com/gabrielelana/pomicons#how-do-they-look-like">corresponding unicode.</a> The <code>%{F#hexcolor}</code> part is a <a href="https://github.com/polybar/polybar/wiki/Formatting#format-tags-inside-polybar-config">polybar format tag</a>, you can
 change them to the colors of your choice.
 </p>
 
@@ -70,6 +73,10 @@ change them to the colors of your choice.
 The polybar config looks like the following :
 </p>
 {% highlight INI %}
+[bar/mybar]
+;; setting up the bar so that it uses the correct font
+font-1 = "Pomicons:size=8;1"
+
 [module/pomodoro]
 type = custom/script
 exec = /path/to/the/script.sh
@@ -84,7 +91,7 @@ We could stop there but I wanted it to be able to optionally show the time and
 the current task, meaning I wanted to be able to switch between different output
 formats.
 To do so, we need to have some way to keep track of a state. Environment
-variables aren't an option as the script is called as a child and therefor
+variables aren&rsquo;t an option as the script is called as a child and therefor
 cannot modify the environment of the parent. This means we have to use a file
 instead, like so :
 </p>
@@ -157,7 +164,7 @@ set_task_at_hand() {
 {% endhighlight %}
 
 <p>
-I'll just go over one of the 3 print functions :
+I&rsquo;ll just go over one of the 3 print functions :
 </p>
 {% highlight bash %}
 print_pomodoro_state_full() {
@@ -189,5 +196,4 @@ We have 3 cases :
 </ul>
 
 <p>
-Putting it all together, you can find the end result <a href="https://gist.github.com/tmpbeing/0af5d6f44d8978a29035c415a4cd8fe4">here</a>.
-</p>
+Putting it all together, you can find the end result <a href="https://gist.github.com/tmpbeing/0af5d6f44d8978a29035c415a4cd8fe4">here</a>.</p>
