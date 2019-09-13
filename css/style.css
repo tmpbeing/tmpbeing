@@ -168,13 +168,13 @@ main article h2 {
 
 main article code {
   font-family: Roboto Mono;
+  font-size: 14px;
 }
 
 main article pre {
   padding: 0.5em;
-  line-height: 1.2;
+  line-height: 1em;
   border: 1px solid #d5c4a1;
-  font-size: 14px;
   overflow: auto;
 }
 
