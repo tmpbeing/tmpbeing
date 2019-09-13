@@ -1,0 +1,163 @@
+---
+title: "Further refining my org-pomodoro workflow"
+date: 2019-09-13 00:00:00
+layout: post
+tags: orgmode emacs
+---
+<p>
+In a <a href="/blog/2019/07/05">previous article</a>, I showcased a script I made to display org-pomodoro&rsquo;s
+current status to polybar. Since then my workflow has evolved and I have added
+some functionalities to this script.
+</p>
+
+<p>
+First, org-pomodoro itself has evolved. There&rsquo;s a <a href="https://github.com/marcinkoziej/org-pomodoro/commit/aa07c11318f91219336197e62c47bc7a3d090479">new option</a> to keep the pomodoro
+going when it ends, going into overtime and requiring a manual break. I like it
+because 25 minutes can sometimes be too short and not wanting to break my focus
+on the current task I would end up ignoring it for a few minutes making the
+break timer incorrect. You can turn on this option with :
+</p>
+{% highlight cl %}
+(setq org-pomodoro-manual-break t)
+{% endhighlight %}
+
+<p>
+I also modified my script to allow me to control org-pomodoro through clicks on
+the polybar modules. The new actions are :
+</p>
+<ul class="org-ul">
+<li>Ending a pomodoro. The new option requires the user to end the pomodoro
+manually. I simply can do so by double-clicking on the polybar module instead
+of calling org-pomodoro from an emacsclient instance.</li>
+<li>Restart a pomodoro. Allows me to go back to work on the same task as before
+after or during a break.</li>
+<li>Kill a pomodoro. If I have an emergency or am disturbed during a pomodoro, I
+can quickly kill it with a middle mouse click on the module.</li>
+<li>Add a new to-do to my inbox. Right clicking the modules open a floating window
+with an org-capture. If a pomodoro is running it selects my simple to-do
+template. If no pomodoro is running however it uses another template designed
+to directly start a pomodoro from the newly created task upon capture.</li>
+</ul>
+<p>
+Altogether it provides me with a convenient interface to org-pomodoro even when
+outside Emacs.
+</p>
+
+<p>
+You&rsquo;ll find all the code necessary <a href="https://gist.github.com/tmpbeing/57f04c0ed210fac1115def3f81532846">here</a> but I&rsquo;ll go over the installation process.
+</p>
+
+<p>
+To set this up you&rsquo;ll need to copy the org-pomodoro.sh script.
+I use <a href="https://github.com/hlissner/doom-emacs">doom-emacs</a> and rely on one of it&rsquo;s functions to create a pop-up window
+with the wanted capture template. I have however provided in the script an
+alternative for non doom users that relies on <a href="https://orgmode.org/worg/org-contrib/org-protocol.html">org-protocol</a> so you&rsquo;ll need to set
+that up properly if needed. To use simply change to false <code>DOOM_EMACS</code>
+variable at the top of the script.
+</p>
+
+<p>
+Then you&rsquo;ll need to configure polybar to use the <a href="https://github.com/gabrielelana/pomicons">pomicons font</a> and you&rsquo;ll need
+to create a module to call the script. The argument of the call determines
+the action so you can bind them to any type of click or wheel-scroll.
+Available arguments are :
+</p>
+<ul class="org-ul">
+<li>No argument to display the pomodoro</li>
+<li><code>toggle</code> to toggle between the different display modes</li>
+<li><code>end-or-restart</code> to end current pomodoro or restart last one depending on
+context</li>
+<li><code>kill</code> to kill the current pomodoro</li>
+<li><code>new</code> to create a to-do and start pomodoro from said to-do if none is active</li>
+</ul>
+<p>
+You can find my module configuration in the <a href="https://gist.github.com/tmpbeing/57f04c0ed210fac1115def3f81532846">gist</a>.
+</p>
+
+<p>
+For <code>new</code> to work properly you&rsquo;ll need two org-capture templates. Your usual
+to-do template and another template marked with the <code>:pomodoro t</code> property.
+So for example :
+</p>
+{% highlight cl %}
+(setq org-capture-templates
+      '(("t" "Todo" entry (file+headline "~/org/todo.org" "Inbox")
+         "* TODO %?\n  %i\n  %a")
+        ("z" "Pomodoro" entry (file+headline "~/org/todo.org" "Inbox")
+         "* TODO %?\n  %i\n  %a" :pomodoro t)))
+
+;; or for doom users you can use the built in t template and add another like so :
+(after! org
+  (appendq! org-capture-templates
+            '(("z" "Pomodoro" entry ; Used for polybar integration
+               (file+headline +org-capture-todo-file "Inbox")
+               "* [ ] %?\n%i\n%a" :prepend t :kill-buffer t :pomodoro t))))
+{% endhighlight %}
+
+<p>
+And now we have to make this <code>:pomodoro t</code> property actually do something. To do
+so I wrote a function that will be run at the end of a capture through a hook :
+</p>
+{% highlight cl %}
+(defun +org-pomodoro/start-pomodoro-on-capture ()
+  "Starts org-pomodoro upon capture if the pomodoro capture template was used"
+
+  (when (and (not org-note-abort)
+             (equal (org-capture-get :pomodoro) t))
+    (when (and org-pomodoro-last-clock-in
+               org-pomodoro-expiry-time
+               (org-pomodoro-expires-p))
+      (setq org-pomodoro-count 0))
+    (set-buffer (org-capture-get :buffer))
+      (goto-char (org-capture-get :insertion-point))
+      (org-clock-in)
+      (org-pomodoro-start :pomodoro)))
+
+(add-hook 'org-capture-after-finalize-hook #'+org-pomodoro/start-pomodoro-on-capture)
+{% endhighlight %}
+
+<p>
+What this does is check that the capture was not aborted and that the templates
+has the <code>:pomodoro t</code> property and if it does it will reset the pomodoro count
+if necessary, go to the new headline, start the clock and finally start the pomodoro.
+</p>
+
+<p>
+For the <code>end-or-restart</code> command I wrote a function that basically behaves the
+same as <code>org-pomodoro</code> except there is no prompt, to avoid the command getting
+stuck on it and it uses org-clock-in-last meaning it automatically uses the last
+clocked item instead of requiring to be on a headline or having another prompt.
+So we also need to add it to our config :
+</p>
+{% highlight cl %}
+(defun +org-pomodoro/restart-last-pomodoro ()
+  "Starts a new pomodoro on the last clocked-in task. Resets the pomodoro count without prompt when necessary.
+
+  This is useful for external scripts as the org-pomodoro function has y-or-n prompts"
+  (when (and org-pomodoro-last-clock-in
+             org-pomodoro-expiry-time
+             (org-pomodoro-expires-p))
+    (setq org-pomodoro-count 0))
+  (setq org-pomodoro-last-clock-in (current-time))
+
+  (call-interactively 'org-clock-in-last)
+  (org-pomodoro-start :pomodoro))
+{% endhighlight %}
+<p>
+This is called from the script so if you change it&rsquo;s name don&rsquo;t forget to modify
+it in the script.
+</p>
+
+<p>
+That&rsquo;s it for the emacs side of things. All that&rsquo;s left is to configure the
+script <code>org-pomodoro.sh</code> through the variables at the top of the file.
+</p>
+
+<p>
+Finally if you use a tiling window manager capable of this, it&rsquo;s probably a good
+idea to set the windows created by the script as floating. They are named
+&ldquo;org-capture&rdquo;. Here&rsquo;s how to do it in i3 :
+</p>
+{% highlight ini %}
+for_window [title="org-capture"] floating enable
+{% endhighlight %}
